@@ -4,6 +4,7 @@ var path = require("path");
 var fs = require("fs");
 var crypto = require("crypto");
 var openpgp = require("openpgp");
+const { signature } = require("openpgp");
 
 const KEYS_DIR = path.join(__dirname, "keys");
 const PRIV_KEY_TEXT = fs.readFileSync(path.join(KEYS_DIR, "priv.pgp.key"), "utf8");
@@ -38,25 +39,43 @@ addPoem()
     .then(checkPoem)
     .catch(console.log);
 
-
 // **********************************
 
 async function addPoem() {
     var transactions = [];
 
     // TODO: add poem lines as authorized transactions
-    // for (let line of poem) {
-    // }
+    for (let line of poem) {
+        transactions.push(await createTransaction(line))
+    }
 
     var bl = createBlock(transactions);
-
     Blockchain.blocks.push(bl);
-
     return Blockchain;
 }
 
+async function createTransaction(data) {
+    // Create the transaction object
+    var transaction = {
+        data
+    }
+
+    // Add the transaction hash
+    transaction.hash = transactionHash(transaction);
+
+    // 
+    await authorizeTransaction(transaction)
+
+    return transaction;
+}
+
+async function authorizeTransaction(transaction) {
+    transaction.pubKey = PUB_KEY_TEXT;
+    transaction.signature = await createSignature(transaction.data, PRIV_KEY_TEXT);
+}
+
 async function checkPoem(chain) {
-    console.log(await verifyChain(chain));
+    console.log(`Transaction and Block are valid:` + await verifyChain(chain));
 }
 
 function createBlock(data) {
@@ -129,7 +148,18 @@ async function verifyBlock(bl) {
         if (!Array.isArray(bl.data)) return false;
 
         // TODO: verify transactions in block
+        for (let transaction of bl.data) {
+            if (!verifyTransaction(transaction)) return false;
+        }
     }
+
+    return true;
+}
+
+function verifyTransaction(transaction) {
+    if (transaction.hash !== transactionHash(transaction)) return false;
+    if (transaction.pubKey === null || transaction.signature === null) return false;
+    if (!verifySignature(transaction.signature, transaction.pubKey)) return false;
 
     return true;
 }
