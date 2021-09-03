@@ -92,11 +92,10 @@ function verifyChain(Blockchain) {
         if (block.data === null
             || block.prevHash === null
             || block.index <= 0
-            || block.hash !== blockHash(block)) {
+            || block.hash !== blockHash(block)
+            || block.prevHash !== Blockchain.blocks[block.index - 1].hash) // forcing use of elegant for.
             return result;
-        }
     }
     result = true;
-
     return result;
 }
