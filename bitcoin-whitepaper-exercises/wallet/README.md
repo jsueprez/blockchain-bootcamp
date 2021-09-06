@@ -1,4 +1,4 @@
-Bitcoin Whitepaper Exercises - Wallet
+**Bitcoin Whitepaper Exercises - Wallet**
 
 In this exercise, you will create and authorize transactions which "spend" money by transferring from one account to the other, and back. You will define a wallet that tracks two accounts, including outputs that determine each account's balances, and spend those outputs as inputs to the other account, and vice versa. One of the expenditures must be rejected for insufficient balance, and gracefully noted.
 
@@ -8,7 +8,8 @@ Setup
 Run npm install in this exercise folder to install the dependencies listed in the included package.json file.
 
 Run node generate-keys.js from the command-line to create the keys/ sub-directory which includes two keypairs, one for each account, to use for digital signatures.
-Part 1
+
+**Part 1**
 
 Notice that addAccount(..) (which is called twice for you) creates two entries in our wallet, with each entry tracking the keypair for that account as well as its current list of valid outputs that represent all the funds available to that account to spend.
 
@@ -23,7 +24,8 @@ The rules for spending dictate that we should sort the outputs we have in an acc
 If our total selected outputs (aka inputs) amounts exceeds the intended amount to spend, we'll need another output for this transaction that represents the change/refund back to the originating account for the difference. If we don't have enough outputs in an account for the amount we're spending, that should be noted as an error and the expenditure transaction should be aborted.
 
 For example, if you have outputs of 5, 10, and 15, and you want to spend 23, you'd sort the list to 15, 10, and 5, and thus 15 and 10 would be used. But since that exceeds 23, you need to give "change" of 2 back as an input to the originating account (from whom these two outputs were selected).
-Part 2
+
+**Part 2**
 
 Define accountBalance(..) to compute the total balance for an account in the wallet by adding up all its outputs amounts.
 
