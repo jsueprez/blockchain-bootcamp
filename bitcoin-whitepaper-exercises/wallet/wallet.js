@@ -3,6 +3,7 @@
 var path = require("path");
 var fs = require("fs");
 
+// Object of Blockcahin type
 var Blockchain = require(path.join(__dirname, "blockchain.js"));
 
 const KEYS_DIR = path.join(__dirname, "keys");
@@ -22,7 +23,7 @@ addAccount(PRIV_KEY_TEXT_2, PUB_KEY_TEXT_2);
 wallet.accounts[PUB_KEY_TEXT_1].outputs.push(
     {
         account: PUB_KEY_TEXT_1,
-        amount: 42,
+        amount: 42
     }
 );
 
@@ -61,8 +62,6 @@ async function main() {
         console.log(err);
     }
 
-    console.log(accountBalance(PUB_KEY_TEXT_1));
-    console.log(accountBalance(PUB_KEY_TEXT_2));
     console.log(await Blockchain.verifyChain(Blockchain.chain));
 }
 
@@ -75,60 +74,89 @@ function addAccount(privKey, pubKey) {
 }
 
 async function spend(fromAccount, toAccount, amountToSpend) {
-    // TODO
+
+    let initialBalance = accountBalance(fromAccount.pubKey);
+
+    console.log(`Initial Balance :  ${initialBalance}`)
+
     var trData = {
         inputs: [],
         outputs: [],
     };
 
-    // pick inputs to use from fromAccount's outputs (i.e. previous txns, see line 22), sorted descending
-    // var sortedInputs =
+    var sortedArray = [...fromAccount.outputs].sort((a, b) => b.amount - a.amount);
 
-    // 	for (let input of sortedInputs) {
-    // 		// remove input from output-list
+    var inputsToUse = [];
+    var inputAmount = 0;
 
+    for (let input of sortedArray) {
+        // Remove from fromAccount.outputs since we are discounting the amount
+        fromAccount.outputs.splice(fromAccount.outputs.indexOf(input), 1);
 
-    // 		// do we have enough inputs to cover the spent amount?
+        // Add this input as valid fro do the Spend
+        inputsToUse.push(input);
+        // Sum the amount collected to do the Spend
+        inputAmount += input.amount;
 
+        // If during the loop We reach the amountToSpend, just break and continue.
+        if (inputAmount >= amountToSpend) break;
+    }
 
+    // Do we have enough amount in the fromAcount to perfmr the Spend, otherwise throw an exception
+    if (inputAmount < amountToSpend) {
+        fromAccount.outputs.push(...inputsToUse);
+        throw `Don't have enough to spend ${amountToSpend}!`;
+    }
 
-    // 	}
+    // Add the inputs to use inthe inputs transactions
+    for (let input of inputsToUse) {
+        trData.inputs.push(
+            await Blockchain.authorizeInput(
+                {
+                    account: input.account,
+                    amount: input.amount
+                },
+                fromAccount.privKey)
+        );
+    }
 
+    // Add the transaction to be performed to the transaction output. 
+    trData.outputs.push({ account: toAccount.pubKey, amount: amountToSpend });
 
+    // Do we need to give back some change? If positivie, add this transaction ot the transation output.
+    if (inputAmount >= amountToSpend) {
+        trData.outputs.push({ account: fromAccount.pubKey, amount: inputAmount - amountToSpend });
+    }
 
-    // 	if (inputAmounts < amountToSpend) {
-
-    // 		throw `Don't have enough to spend ${amountToSpend}!`;
-    // 	}	
-
-    // sign and record inputs
-
-
-    // record output
-
-
-    // is "change" output needed?
-
-
-    // create transaction and add it to blockchain
+    // create a transaction
     var tr = Blockchain.createTransaction(trData);
-    Blockchain.insertBlock(
-        // TODO .createBlock method
 
-    );
+    // Create block with the transaction.. Must "cast" to array
+    var blk = Blockchain.createBlock([tr]);
 
-    // record outputs in our wallet (if needed)	
+    // insert block into the blockchain
+    Blockchain.insertBlock(blk);
+
+    // save the transactions according to the account address.
+    for (let output of trData.outputs) {
+        if (output.account in wallet.accounts) {
+            wallet.accounts[output.account].outputs.push(output);
+        }
+    }
+
+    console.log(`Amount to transfer : ${amountToSpend}`);
+    console.log(`Balance of fromAccount is: ${accountBalance(PUB_KEY_TEXT_1)}`);
+    console.log(`Balance of toAccount is: ${accountBalance(PUB_KEY_TEXT_2)}\n`);
 
 }
 
 function accountBalance(account) {
     var balance = 0;
 
-    // 	if (account in wallet.accounts) {
-
-    // 	}	
-
-
-    // 	return balance;
-
+    if (account in wallet.accounts) {
+        for (let output of wallet.accounts[account].outputs) {
+            balance += output.amount
+        }
+    }
+    return balance;
 }
