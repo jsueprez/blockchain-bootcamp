@@ -46,19 +46,78 @@ countMyEarnings();
 // **********************************
 
 function addPoem() {
-    // TODO: add lines of poem as transactions to the transaction-pool
+
+    let data = [];
+
+    for (let line of poem) {
+        transactionPool.push(createTransaction(line));
+    }
+}
+
+function createTransaction(data) {
+    var tr = {
+        data,
+        fee: Math.floor(Math.random() * 10) + 1,
+    };
+
+    tr.hash = transactionHash(tr);
+
+    return tr;
+}
+
+function transactionHash(tr) {
+    return crypto.createHash("sha256").update(
+        `${JSON.stringify(tr.data)}`
+    ).digest("hex");
 }
 
 function processPool() {
-    // TODO: process the transaction-pool in order of highest fees
+    let sortedPool = [...transactionPool].sort((a, b) => b.fee - a.fee);
+
+    let currentTrCount = 0;
+    let blockList = [];
+
+    for (let transaction of sortedPool) {
+        // Remove from fromAccount.outputs since we are discounting the amount
+        transactionPool.splice(transactionPool.indexOf(transaction), 1);
+        blockList.push(transaction);
+
+        currentTrCount++;
+        if (currentTrCount >= maxBlockSize) {
+            var bl = createBlock([...blockList]);
+            Blockchain.blocks.push(bl);
+
+            currentTrCount = 0;
+            blockList.length = 0
+        }
+
+    }
 }
 
 function countMyEarnings() {
-    // TODO: count up block-fees and transaction-fees
+
+    let fixEarnings = 0;
+    let variableEarnings = 0;
+
+    for (let bl of Blockchain.blocks) {
+
+        if (bl.index === 0) continue;
+
+        fixEarnings += bl.blockFee;
+
+        for (let tr of bl.data) {
+            variableEarnings += tr.fee;
+        }
+    }
+    console.log(`Fixed earnings : ${fixEarnings}`);
+    console.log(`Variable earnings : ${variableEarnings}`);
+    console.log(`Total earnings : ${fixEarnings + variableEarnings}`);
 }
 
 function createBlock(data) {
     var bl = {
+        blockFee: blockFee,
+        account: PUB_KEY_TEXT,
         index: Blockchain.blocks.length,
         prevHash: Blockchain.blocks[Blockchain.blocks.length - 1].hash,
         data,
@@ -88,20 +147,4 @@ function hashIsLowEnough(hash) {
     var threshold = Number(`0b${"".padStart(neededChars * 4, "1111".padStart(4 + difficulty, "0"))}`);
     var prefix = Number(`0x${hash.substr(0, neededChars)}`);
     return prefix <= threshold;
-}
-
-function createTransaction(data) {
-    var tr = {
-        data,
-    };
-
-    tr.hash = transactionHash(tr);
-
-    return tr;
-}
-
-function transactionHash(tr) {
-    return crypto.createHash("sha256").update(
-        `${JSON.stringify(tr.data)}`
-    ).digest("hex");
 }
