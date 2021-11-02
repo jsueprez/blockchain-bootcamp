@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="dapp.js"></script>
     <title>My Simple App</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
 </head>
 
 <body>
@@ -15,8 +15,21 @@
     <!-- 1. detect Metamask is / is not installed -->
     <div id="mm-detected"> </div>
     <!-- 2. Allow the user to get access to Metamask -->
+    <button id="mm-connect">Connect to MetaMask</button>
+    <!-- 3. Allow the user to send a transaction / update contract state ( i.e send a transaction to a contract)  -->
+    <div id="mm-current-account"></div>
+    <input id="ss-input-box" type="number" placeholder="Provide input" />
+    <button id="ss-input-button"> Submit Value</button>
 
-    <!-- 3. Allow the user to send a transaction / update contract state ( i.e send a)  -->
+    <div>
+        <button id="ss-get-value">Get Simple Storage value</button>
+    </div>
+    <div id="ss-display-value">Current Simple Storage Value: </div>
+
+
+
 </body>
+<script src="dapp.js"></script>
+<!--to the bottom because then it is loaded after all the components are loaded-->
 
 </html>
