@@ -1,2 +1,15 @@
 .secret
 */node_modules/*
+*.env
+*.csv
+*-dat
+*.iml
+*.log
+*.out
+*.pid
+*.seed
+*.subline
+*.swo
+*.swp
+*.project
+*.npm-debug.log
