@@ -22,8 +22,8 @@ contract SupplyChain {
     // <struct Item: name, sku, price, state, seller, and buyer>
     struct Item {
         string name;
-        uint sku;
-        uint price;
+        uint256 sku;
+        uint256 price;
         State state;
         address payable seller;
         address payable buyer;

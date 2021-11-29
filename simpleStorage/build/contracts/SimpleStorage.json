@@ -813,15 +813,21 @@
     "version": "0.5.16+commit.9c3226ce.Emscripten.clang"
   },
   "networks": {
+    "4": {
+      "events": {},
+      "links": {},
+      "address": "0x93892736929DEE88077B81AD001523DdfB91f428",
+      "transactionHash": "0xe4c2c6edb7b5dc67d0d36acbe0bf795764d5f06542c1fe6dedfd9c723628e2fa"
+    },
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x0e570c4879655Cf287711Ee5aEfeA2c8e99300C6",
-      "transactionHash": "0x84f40055cfeb5b1a90743c89ac684e6142b3b8f74ba111c5b036a2729737106c"
+      "address": "0x7934927c530070e03A32a2746B49e60F60A11b67",
+      "transactionHash": "0xe4bc5d32630f0145d895dabcf19064005826c8f3b5dbb5368e11c7264129a2a2"
     }
   },
   "schemaVersion": "3.4.3",
-  "updatedAt": "2021-09-22T03:49:39.317Z",
+  "updatedAt": "2021-11-06T08:49:15.763Z",
   "networkType": "ethereum",
   "devdoc": {
     "methods": {}
