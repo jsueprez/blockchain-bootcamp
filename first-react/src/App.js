@@ -2,11 +2,6 @@ import './App.css';
 import React, { Component } from 'react';
 import Counters from './components/Counters';
 import NavBar from './components/NavBar';
-
-import 'bootstrap/dist/css/bootstrap.min.css';
-
-
-
 class App extends Component {
   state = {
     counters: [
@@ -23,6 +18,14 @@ class App extends Component {
     const index = counters.indexOf(counter);
     counters[index] = { ...counter };
     counters[index].value++;
+    this.setState({ counters });
+  }
+
+  handleDecrement = counter => {
+    const counters = [...this.state.counters];
+    const index = counters.indexOf(counter);
+    counters[index] = { ...counter };
+    counters[index].value--;
     this.setState({ counters });
   }
 
@@ -43,11 +46,12 @@ class App extends Component {
     return (
       <React.Fragment>
         <NavBar totalCounters={this.state.counters.filter(c => c.value > 0).length} />
-        <main className="container">
+        <main className="container-fluid">
           <Counters
             counters={this.state.counters}
             onDelete={this.handleDelete}
             onIncrement={this.handleIncrement}
+            onDecrement={this.handleDecrement}
             onReset={this.handleReset}
           />
         </main>
