@@ -46,6 +46,10 @@ class MovieList extends Component {
         this.setState({ sortColumn });
     }
 
+    handleOnSave = () => {
+        console.log('working')
+    }
+
     getPagedData = () => {
 
         const {
@@ -96,7 +100,8 @@ class MovieList extends Component {
                     </div>
                     <div className="col-8">
                         <Link
-                            to='/movies/new'>
+                            to='/movies/new'
+                            state={{ testvalue: "hello" }}>
                             <button className="btn btn-primary mb-2" >
                                 New Movie
                             </button>
@@ -120,7 +125,7 @@ class MovieList extends Component {
                 </div>
 
 
-            </React.Fragment>
+            </React.Fragment >
         );
     }
 }

@@ -51,19 +51,6 @@ class Form extends Component {
     this.setState({ data, errors });
   }
 
-  handeSelectChange = (e) => {
-    const errors = { ...this.state.errors }
-
-    const errorMessage = this.validateProperty(e.currentTarget)
-    console.log(errorMessage)
-    if (errorMessage) errors[e.currentTarget.name] = errorMessage;
-    else delete errors[e.currentTarget.name];
-
-    const data = { ...this.state.data };
-    data.genres = [];
-    this.setState({ data })
-  }
-
   renderButton(label) {
     return (
       <button
